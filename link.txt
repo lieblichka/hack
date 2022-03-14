@@ -1,0 +1,2 @@
+https://ask-dev.ru/info/537383/cant-step-into-stringh-function-with-gdb
+https://unix.stackexchange.com/questions/68679/best-practices-for-attaching-debug-symbols-to-system-libraries-during-developmen

@@ -2502,19 +2502,19 @@
 
 			./memory_segments
 			
-			global_initialized_var is at address 0x248 
-			static_initialized_var is at address
+			global_initialized_var is at address 0x0ee11040 
+			static_initialized_var is at address 0x0ee11044
 
 
-			static_var is at address
-			global_var is at address
+			static_var is at address 0x0ee11050
+			global_var is at address 0x0ee1104c
 
 
-			heap_var is at address
+			heap_var is at address 0x103fb2a0
 
 
-			stack_var is at address
-			the function's stack_var is at address
+			stack_var is at address 0x4bf0e34c
+			the function's stack_var is at address 0x4bf0e324
 
 
 		// DATA
@@ -2640,6 +2640,23 @@
 		освободившуюся память. Часто с помощью обычных команд printf() и
 		небольших экспериментов можно многое узнать о том, как устроена ваша
 		система
+		
+			./heap_example 1300
+
+			[+] allocating 100 bytes of memory on the heap for char_ptr
+			char_ptr (0x555dcedc76b0) --> This memory is located on the heap.
+			[+] allocating 12 bytes of memory on the heap for int_ptr
+			int_ptr (0x555dcedc7bd0) --> 31337
+			[-] freeing char_ptr's heap memory...
+			[+] allocating another 15 bytes for char_ptr
+			char_ptr (0x555dcedc76b0) -->  'new memory'
+			[-] freeing int_ptr's heap memory...
+			[-] freeing char_ptr's heap memory...
+
+		- Как видно из вывода при данном аргументе количества памяти, сначала
+		было выделена ячейка памяти под char по адресу 0x555dcedc76b0, а
+		после освобожденно, по повторному выделению зарезирвировалась ранее
+		занятая ячейка памяти.
 
 0x273
 
@@ -2655,7 +2672,9 @@
 		обременительным. Поскольку код проверки ошибок фактически одинаков для
 		всех обращений к malloc(), вместо группы одинаковых команд в разных 
 		местах весьма эффективно использовать функцию. Примером служит
-		программа errorchecked_heap.c 
+		программа errorchecked_heap.c
+
+
 
 
 

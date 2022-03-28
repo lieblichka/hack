@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
+#include <fcntl.h>		// for file flags
 #include <sys/stat.h>
+#include <unistd.h>		// for function write
 
 void usage(char *prog_name, char *filename)
 {
@@ -15,7 +16,7 @@ void *ec_malloc(unsigned int);	// Оболочка для malloc() с прове
 
 int main(int argc, char *argv[])
 {
-	int fd; // file deskriptor
+	int fd;	// file deskriptor
 	char *buffer, *datafile;
 
 	buffer = (char *) ec_malloc(100);
@@ -31,8 +32,14 @@ int main(int argc, char *argv[])
 	printf("[DEBUG] buffer  @ %p:\'%s\'\n", buffer, buffer);
 	printf("[DEBUG] datafile  @ %p:\'%s\'\n", datafile, datafile);
 
-	strncat(buffer, "\n", 1); 	  // Добавить в конце перевод строки
+	// На данную функцию при текущей конструкции компилятор будет ругаться
+	// так как, для такой конструции предпочтительнее будет использовать
+	// strcat из за того, что строка состоит из одного символа "\n" и к тому
+	// же она не инициализирована, поэтому такое использование подозрительно 
 
+	//strncat(buffer, "\n", 1); 	  // Добавить в конце перевод строки
+	strcat(buffer, "\n");			  // Добавить в конце перевод строки
+	
  // Открытие файла
 	fd = open(datafile, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
 	if (fd == -1)

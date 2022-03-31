@@ -1,0 +1,2 @@
+sudo chown root:root notetaker
+sudo chmod u+s notetaker

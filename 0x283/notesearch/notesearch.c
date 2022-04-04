@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "hacking.h"
+#include <unistd.h>
 
 #define	FILENAME "/var/notes"
 
@@ -31,7 +32,7 @@ int		main(int argc, char *argv[])
 	while (printing)
 		printing = print_notes(fd, userid, searchstring);
 	printf("-------[ end of note data ]-------\n");
-	close(fd)
+	close(fd);
 }
 
 // Функция для вывода заметок с заданным ID пользователя
@@ -65,11 +66,57 @@ int	find_user_note(int fd, int user_uid)
 
 	while (note_uid != user_uid)
 	{
+
 		if (read(fd, &note_uid, 4) != 4)
 			return -1;
 		if (read(fd, &byte, 1) != 1)
 			return -1;
+
+		byte = length = 0;
+		while (byte != '\n')				// Узнать, сколько байт осталось
+		{									// до конца строки 
+
+			if (read(fd, &byte, 1) != 1)	// Прочитать один байт
+				return -1;					// Если не удалось прочитать байт
+											// вернуть код конца файла
+			length++;
+		}
 	}
+	lseek(fd, length * -1, SEEK_CUR);		// Переместить текущую позицию
+											// чтения назад на length байт
+
+	printf("[DEBUG] found a %d byte note for user id %d\n", length, note_uid);
+	return length;
+
+}
+
+// Функция для поиска заметки по данному ключевому слову
+// возвращает 1, если заметка найдена, и 0, если найдена
+int		search_note(char *note, char *keyword)
+{
+	int i, keyword_length, match = 0;
+
+	keyword_length = strlen(keyword);
+	if (keyword_length == 0)			// Если строка поиска не задана
+		return 1;						// всегда "совпадение"
+
+	for (i = 0; i < strlen(note); i++)	// Цисл по всем байтам заметки
+	{
+		if (note[i] == keyword[match])	// Если совпадает с байтом
+										// ключевого слова
+			match++;	// Приготовиться к проверке следующего байта
+		else			// в противном случае 
+		{
+			if (note[i] == keyword[0]) // если байт совпадает с первым байтом
+									   // ключевого слова 
+				match = 1; // в счетчик повторений записывается 1
+			else
+				match = 0; // В противном случае - 0
+		}
+		if (match == keyword_length) // Если найдено полное совпадение
+			return 1; 	// вернуть код совпадения
+	}
+	return 0; // Вернуть код несовпадения 
 }
 
 
